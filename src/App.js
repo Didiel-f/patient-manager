@@ -1,12 +1,26 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Cita } from './components/Cita';
 import { Formulario } from "./components/Formulario";
 
 
 function App() {
 
-  const [citas, setCitas] = useState([]);
+  
+  // Citas en el local storage
+  let citasIniciales = JSON.parse(localStorage.getItem('citas'));
+  if ( !citasIniciales ) {
+    citasIniciales = [];
+  }
 
+  const [citas, setCitas] = useState(citasIniciales);
+
+  useEffect(() => {
+    if (citasIniciales) {
+      localStorage.setItem('citas', JSON.stringify(citas));
+    } else {
+      localStorage.setItem('citas', JSON.stringify([]));
+    }
+  }, [citas, citasIniciales])
 
   // Agregar citas
   const crearCita = cita => {
@@ -23,6 +37,7 @@ function App() {
   };
 
   // Mensaje condicional
+  const title = citas.length === 0 ? 'No hay citas' : 'Administra tus citas';
   
   
   return (
@@ -37,7 +52,7 @@ function App() {
             />
           </div>
           <div className="one-half column">
-            <h2>Administra tus citas</h2>
+            <h2>{ title }</h2>
             { citas.map( cita => (
               <Cita 
                 key={ cita.id }
